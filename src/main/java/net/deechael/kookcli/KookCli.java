@@ -29,7 +29,7 @@ public final class KookCli {
 
     private final static Receiver RECEIVER = new Receiver();
 
-    private final static Logger LOGGER = LoggerUtil.getLogger(KookCli.class, Level.DEBUG);
+    private final static Logger LOGGER = LoggerUtil.getLogger(KookCli.class, Level.INFO);
     private static Terminal terminal;
     private static LineReader lineReader;
 
@@ -101,6 +101,10 @@ public final class KookCli {
         logged_in = false;
         currentGuild = null;
         currentChannel = null;
+    }
+
+    public static boolean isBot() {
+        return auth != null && auth.startsWith("Bot");
     }
 
     public static JsonObject getRequest(String url, Map<String, String> params) {
@@ -176,6 +180,7 @@ public final class KookCli {
 
     public static void setCurrentGuild(String currentGuild) {
         KookCli.currentGuild = currentGuild;
+        currentChannel = null;
     }
 
     public static String getCurrentChannel() {

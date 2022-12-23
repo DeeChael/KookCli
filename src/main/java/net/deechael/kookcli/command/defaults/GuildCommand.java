@@ -6,6 +6,7 @@ import net.deechael.kookcli.ConsoleSender;
 import net.deechael.kookcli.KookCli;
 import net.deechael.kookcli.command.Command;
 import net.deechael.kookcli.network.Routes;
+import net.deechael.kookcli.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,17 @@ public final class GuildCommand {
                             for (int i = guilds.size() - 1; i >= 0; i--) {
                                 message.append(i).append(" - ").append(guilds.get(i).get("name").getAsString()).append("\n");
                             }
+                            System.out.println(message);
                             String guildIndex = KookCli.getLineReader().readLine("==> ");
+                            if (!StringUtil.isInteger(guildIndex)) {
+                                return 1;
+                            }
+                            int index = Integer.parseInt(guildIndex);
+                            if (index < 0 || index >= guilds.size()) {
+                                return 1;
+                            }
+                            KookCli.setCurrentGuild(guilds.get(index).get("id").getAsString());
+                            System.out.println("Successfully get into " + guilds.get(index).get("name").getAsString());
                             return 1;
                         }))
         );

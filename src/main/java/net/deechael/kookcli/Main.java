@@ -1,16 +1,10 @@
 package net.deechael.kookcli;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import net.deechael.kookcli.command.Argument;
-import net.deechael.kookcli.command.Command;
-import net.deechael.kookcli.command.defaults.ExitCommand;
-import net.deechael.kookcli.command.defaults.GuildCommand;
-import net.deechael.kookcli.command.defaults.LoginCommand;
-import net.deechael.kookcli.command.defaults.LogoutCommand;
+import net.deechael.kookcli.command.defaults.*;
 import net.deechael.kookcli.util.StringUtil;
 import org.fusesource.jansi.Ansi;
 import org.jetbrains.annotations.NotNull;
@@ -28,8 +22,6 @@ import org.jline.terminal.TerminalBuilder;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -62,7 +54,10 @@ public class Main {
     private static void registerCommands() {
         LoginCommand.register(COMMAND_DISPATCHER);
         LogoutCommand.register(COMMAND_DISPATCHER);
+        InfoCommand.register(COMMAND_DISPATCHER);
         GuildCommand.register(COMMAND_DISPATCHER);
+        ChannelCommand.register(COMMAND_DISPATCHER);
+        SendCommand.register(COMMAND_DISPATCHER);
         ExitCommand.register(COMMAND_DISPATCHER);
     }
 
