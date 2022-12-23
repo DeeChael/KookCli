@@ -2,6 +2,7 @@ package net.deechael.kookcli;
 
 import ch.qos.logback.classic.Level;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.deechael.kookcli.network.Routes;
@@ -15,10 +16,7 @@ import org.jline.terminal.Terminal;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public final class KookCli {
@@ -31,7 +29,7 @@ public final class KookCli {
 
     private final static Receiver RECEIVER = new Receiver();
 
-    private final static Logger LOGGER = LoggerUtil.getLogger(KookCli.class, Level.INFO);
+    private final static Logger LOGGER = LoggerUtil.getLogger(KookCli.class, Level.DEBUG);
     private static Terminal terminal;
     private static LineReader lineReader;
 
@@ -52,8 +50,8 @@ public final class KookCli {
         if (isLogged())
             throw new RuntimeException("Has logged in!");
         auth = "Bot " + token;
-        startWebsocket();
         logged_in = true;
+        startWebsocket();
     }
 
     public static void login(String phone, String password) {
@@ -77,7 +75,7 @@ public final class KookCli {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                LOGGER.debug("Fetched websocket url successfully");
+                LOGGER.debug("Logged successfully");
                 JsonObject body = JsonParser.parseString(Objects.requireNonNull(response.body()).string()).getAsJsonObject();
                 if (!body.has("token")) {
                     LOGGER.error("Failed to fetch token");
@@ -86,12 +84,90 @@ public final class KookCli {
                 auth = body.get("token").getAsString();
                 JsonObject userInfo = body.getAsJsonObject("user");
                 LOGGER.info("Login as " + userInfo.get("username").getAsString() + "#" + userInfo.get("identify_num").getAsString());
+                if (auth == null)
+                    return;
+                logged_in = true;
+                startWebsocket();
             }
         });
-        if (auth == null)
-            return;
-        startWebsocket();
-        logged_in = true;
+    }
+
+    public static void logout() {
+        if (webSocket != null) {
+            webSocket.close(1000, "normal");
+        }
+        webSocket = null;
+        auth = null;
+        logged_in = false;
+        currentGuild = null;
+        currentChannel = null;
+    }
+
+    public static JsonObject getRequest(String url, Map<String, String> params) {
+        StringBuilder stringBuilder = new StringBuilder(url);
+        if (params.size() > 0) {
+            stringBuilder.append("?");
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                stringBuilder.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+            }
+            url = new StringBuilder(stringBuilder.reverse().substring(1)).reverse().toString();
+        }
+
+        Request req = new Request.Builder()
+                .get()
+                .header("Content-type", "application/json")
+                .header("Authorization", auth)
+                .header("Cookie", cookieHeader(Collections.singletonList(new Cookie.Builder().name("auth").domain("kookapp.cn").value(auth).build())))
+                .url(url).build();
+        return call(url, req);
+    }
+
+    public static List<JsonObject> getPagableRequest(String url, Map<String, String> params) {
+        params.put("page", "1");
+        params.put("page_size", "50");
+        JsonObject firstData = getRequest(url, params);
+        int total = firstData.getAsJsonObject("data").getAsJsonObject("meta").get("total").getAsInt();
+        List<JsonObject> objects = new ArrayList<>();
+        for (JsonElement element : firstData.getAsJsonObject("data").getAsJsonArray("items")) {
+            objects.add(element.getAsJsonObject());
+        }
+        if (total > 50) {
+            int pages = total % 50 == 0 ? total / 50 : total / 50 + 1;
+            for (int page = 2; page <= pages; page++) {
+                params.put("page", "" + page);
+                JsonObject data = getRequest(url, params);
+                for (JsonElement element : data.getAsJsonObject("data").getAsJsonArray("items")) {
+                    objects.add(element.getAsJsonObject());
+                }
+            }
+        }
+        return objects;
+    }
+
+    public static JsonObject postRequest(String url, JsonObject params) {
+        Request req = new Request.Builder()
+                .post(RequestBody
+                        .create(GSON.toJson(params),
+                                MediaType.get("application/json")))
+                .header("Authorization", auth)
+                .header("Cookie", cookieHeader(Collections.singletonList(new Cookie.Builder().name("auth").domain("kookapp.cn").value(auth).build())))
+                .header("Content-type", "application/json")
+                .url(url).build();
+        return call(url, req);
+    }
+
+    private static JsonObject call(String url, Request req) {
+        Call call = HTTP_CLIENT.newCall(req);
+        try {
+            Response response = call.execute();
+            JsonObject body = JsonParser.parseString(Objects.requireNonNull(response.body()).string()).getAsJsonObject();
+            if (body.get("code").getAsInt() != 0)
+                LOGGER.error("Failed to request, response: " + body);
+            return body;
+        } catch (IOException e) {
+            LOGGER.error("Failed to request: " + url, e);
+            throw new RuntimeException(e);
+        }
     }
 
     public static void setCurrentChannel(String currentChannel) {
@@ -111,9 +187,7 @@ public final class KookCli {
     }
 
     public static void exit() {
-        if (webSocket != null) {
-            webSocket.close(1000, "normal");
-        }
+        logout();
         System.exit(0);
     }
 
@@ -137,7 +211,7 @@ public final class KookCli {
         Request req = new Request.Builder()
                 .post(RequestBody.create(new byte[0], MediaType.get("application/json")))
                 .header("Authorization", auth)
-                .header("Cookie", cookieHeader(Collections.singletonList(new Cookie.Builder().name("auth").value(auth).build())))
+                .header("Cookie", cookieHeader(Collections.singletonList(new Cookie.Builder().name("auth").domain("kookapp.cn").value(auth).build())))
                 .header("Content-type", "application/json")
                 .url(Routes.GATEWAY).build();
         Call call = HTTP_CLIENT.newCall(req);
@@ -145,6 +219,9 @@ public final class KookCli {
             @Override
             public void onFailure(Call call, IOException e) {
                 LOGGER.error("Failed to fetch the websocket url", e);
+                logged_in = false;
+                auth = null;
+                webSocket = null;
             }
 
             @Override
@@ -167,7 +244,7 @@ public final class KookCli {
         StringBuilder cookieHeader = new StringBuilder();
         int i = 0;
 
-        for(int size = cookies.size(); i < size; ++i) {
+        for (int size = cookies.size(); i < size; ++i) {
             if (i > 0) {
                 cookieHeader.append("; ");
             }
@@ -179,7 +256,8 @@ public final class KookCli {
         return cookieHeader.toString();
     }
 
-    private KookCli() {}
+    private KookCli() {
+    }
 
     private static class Receiver extends WebSocketListener {
 

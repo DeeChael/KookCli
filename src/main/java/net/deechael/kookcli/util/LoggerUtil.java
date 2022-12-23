@@ -30,6 +30,7 @@ public final class LoggerUtil {
         return lgr;
     }
 
-    private LoggerUtil() {}
+    private LoggerUtil() {
+    }
 
 }

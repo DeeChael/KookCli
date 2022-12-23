@@ -75,10 +75,11 @@ public final class Routes {
     public final static String GAME_ACTIVITY = "https://www.kookapp.cn/api/v3/game/activity";
     public final static String GAME_DELETEACTIVITY = "https://www.kookapp.cn/api/v3/game/delete-activity";
     public final static String OAUTH2_TOKEN = "https://www.kookapp.cn/api/oauth2/token";
-    
+
     // Unofficial
     public final static String AUTH_LOGIN = "https://www.kookapp.cn/api/v2/auth/login";
 
-    private Routes() {}
+    private Routes() {
+    }
 
 }

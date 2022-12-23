@@ -5,7 +5,7 @@ import net.deechael.kookcli.ConsoleSender;
 
 public class Command {
 
-    public static LiteralArgumentBuilder<ConsoleSender> of (String name) {
+    public static LiteralArgumentBuilder<ConsoleSender> of(String name) {
         return LiteralArgumentBuilder.literal(name);
     }
 

@@ -8,6 +8,16 @@ public final class StringUtil {
         return string;
     }
 
-    private StringUtil() {}
+    public static boolean isInteger(String string) {
+        try {
+            Integer.parseInt(string);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private StringUtil() {
+    }
 
 }

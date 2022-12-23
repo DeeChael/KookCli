@@ -2,7 +2,6 @@ package net.deechael.kookcli.command.defaults;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import net.deechael.kookcli.ConsoleSender;
 import net.deechael.kookcli.KookCli;
@@ -14,6 +13,13 @@ public final class LoginCommand {
     public static void register(CommandDispatcher<ConsoleSender> commandDispatcher) {
         commandDispatcher.register(Command
                 .of("login")
+                .then(Command.of("help")
+                        .executes(context -> {
+                            System.out.println("login - Login your account\n" +
+                                    "       login token <token> - Login as bot\n" +
+                                    "       login user <phone> - Login as user");
+                            return 1;
+                        }))
                 .then(Command.of("token").then(
                         RequiredArgumentBuilder.<ConsoleSender, String>argument("token", StringArgumentType.string())
                                 .executes(context -> {
@@ -41,6 +47,7 @@ public final class LoginCommand {
         );
     }
 
-    private LoginCommand() {}
+    private LoginCommand() {
+    }
 
 }
