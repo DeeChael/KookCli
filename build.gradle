@@ -1,6 +1,9 @@
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
+import java.util.jar.JarOutputStream
+
 plugins {
     id 'java'
-    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 group 'net.deechael'
@@ -14,27 +17,96 @@ repositories {
 }
 
 dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    compileOnly 'org.jetbrains:annotations:23.1.0'
+
+    implementation project(':kook-cli-core')
     implementation 'org.jline:jline:3.21.0'
+    implementation 'org.jline:jline-reader:3.21.0'
+    implementation 'org.jline:jline-terminal:3.21.0'
+    implementation 'org.jline:jline-terminal-jansi:3.21.0'
     implementation 'com.mojang:brigadier:1.0.18'
     implementation 'org.fusesource.jansi:jansi:2.4.0'
-    implementation 'ch.qos.logback:logback-classic:1.2.11'
-    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.19.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.19.0'
+    implementation 'net.minecrell:terminalconsoleappender:1.3.0'
+    implementation('com.squareup.okhttp3:okhttp:4.10.0') {
+        exclude group: 'org.jetbrains', module: 'annotations'
+    }
+    implementation('uk.org.lidalia:sysout-over-slf4j:1.0.2') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
 
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 test {
     useJUnitPlatform()
 }
 
-tasks.assemble {
-    dependsOn(shadowJar)
-}
-
 jar {
     manifest {
-        attributes 'Main-Class': 'net.deechael.kookcli.Main'
+        attributes(
+                'Main-Class': 'net.deechael.kookcli.loader.Main'
+        )
     }
+}
+
+configurations {
+    implementOnly.extendsFrom(implementation)
+    implementOnly.canBeResolved(true)
+}
+
+task buildWithDependencies {
+    dependsOn(build)
+
+    if (!allDependenciesExist())
+        return
+
+    File builtJar = new File("${buildDir}/libs/" + project.name + "-" + project.version + ".jar")
+    if (!builtJar.exists())
+        return
+
+    JarFile jarFile = new JarFile(builtJar)
+    JarOutputStream jos = new JarOutputStream(new FileOutputStream("${buildDir}/libs/" + project.name + "-" + project.version + "-with-libs.jar"))
+    jarFile.stream().forEach(entry -> {
+        InputStream is = jarFile.getInputStream(entry)
+        jos.putNextEntry(entry)
+        jos.write(readAllBytes(is))
+        jos.closeEntry()
+    })
+    configurations.implementOnly.resolvedConfiguration.resolvedArtifacts.each {
+        File file = it.file
+        if (file.isFile()) {
+            jos.putNextEntry(new JarEntry("libraries/" + file.name))
+            jos.write(readAllBytes(new FileInputStream(file.path)))
+            jos.closeEntry()
+        }
+    }
+    jos.finish()
+    jos.close()
+    jarFile.close()
+}
+
+boolean allDependenciesExist() {
+    boolean exist = true;
+    configurations.implementOnly.resolvedConfiguration.resolvedArtifacts.each {
+        if (!it.file.exists())
+            exist = false
+    }
+    return exist
+}
+
+static byte[] readAllBytes(InputStream inputStream) {
+    byte[] bytes = new byte[inputStream.available()]
+    inputStream.read(bytes)
+    inputStream.close()
+    return bytes
 }

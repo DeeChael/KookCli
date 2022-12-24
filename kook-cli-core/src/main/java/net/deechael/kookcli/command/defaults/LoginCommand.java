@@ -3,10 +3,10 @@ package net.deechael.kookcli.command.defaults;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import net.deechael.kookcli.ConsoleSender;
 import net.deechael.kookcli.KookCli;
 import net.deechael.kookcli.command.Argument;
 import net.deechael.kookcli.command.Command;
+import net.deechael.kookcli.command.ConsoleSender;
 
 public final class LoginCommand {
 

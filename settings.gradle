@@ -1,2 +1,3 @@
 rootProject.name = 'kook-cli'
+include 'kook-cli-core'
 

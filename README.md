@@ -13,3 +13,12 @@ login user <phone number> - login as user, after entering, you need to enter you
 guild list - list all guilds you joined
 guild goto - go to a guild
 ```
+## How to build?
+First run
+```shell
+./gradlew build
+```
+Second run
+```shell
+./gradlw buildWithDependencies
+```

@@ -2,8 +2,8 @@ package net.deechael.kookcli.command.defaults;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.deechael.kookcli.ConsoleSender;
 import net.deechael.kookcli.KookCli;
+import net.deechael.kookcli.command.ConsoleSender;
 
 public final class ExitCommand {
 

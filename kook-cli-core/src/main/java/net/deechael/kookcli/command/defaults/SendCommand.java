@@ -2,14 +2,12 @@ package net.deechael.kookcli.command.defaults;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.deechael.kookcli.ConsoleSender;
 import net.deechael.kookcli.KookCli;
 import net.deechael.kookcli.command.Argument;
 import net.deechael.kookcli.command.Command;
+import net.deechael.kookcli.command.ConsoleSender;
 import net.deechael.kookcli.network.Routes;
-
-import static net.deechael.kookcli.util.ParamsUtil.json;
-import static net.deechael.kookcli.util.ParamsUtil.param;
+import net.deechael.kookcli.util.ParamsUtil;
 
 public final class SendCommand {
 
@@ -31,10 +29,10 @@ public final class SendCommand {
                                         return 1;
                                     }
                                     KookCli.postRequest(Routes.MESSAGE_CREATE,
-                                            json(
-                                                    param("channel_id", KookCli.getCurrentChannel()),
-                                                    param("type", "1"),
-                                                    param("content", StringArgumentType.getString(context, "content"))
+                                            ParamsUtil.json(
+                                                    ParamsUtil.param("channel_id", KookCli.getCurrentChannel()),
+                                                    ParamsUtil.param("type", "1"),
+                                                    ParamsUtil.param("content", StringArgumentType.getString(context, "content"))
                                             ));
                                     return 1;
                                 })

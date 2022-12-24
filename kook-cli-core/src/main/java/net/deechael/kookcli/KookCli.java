@@ -1,12 +1,14 @@
 package net.deechael.kookcli;
 
-import ch.qos.logback.classic.Level;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.brigadier.CommandDispatcher;
+import net.deechael.kookcli.command.Console;
+import net.deechael.kookcli.command.ConsoleSender;
+import net.deechael.kookcli.command.defaults.*;
 import net.deechael.kookcli.network.Routes;
-import net.deechael.kookcli.util.LoggerUtil;
 import net.deechael.kookcli.util.ZlibUtil;
 import okhttp3.*;
 import okio.ByteString;
@@ -14,12 +16,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public final class KookCli {
+
+    private final static CommandDispatcher<ConsoleSender> COMMAND_DISPATCHER = new CommandDispatcher<>();
+
+    private final static ConsoleSender SENDER = new ConsoleSender();
 
     private final static Gson GSON = new Gson();
 
@@ -29,7 +37,8 @@ public final class KookCli {
 
     private final static Receiver RECEIVER = new Receiver();
 
-    private final static Logger LOGGER = LoggerUtil.getLogger(KookCli.class, Level.INFO);
+    // private final static Logger LOGGER = LoggerUtil.getLogger(KookCli.class, Level.INFO);
+    private final static Logger LOGGER = LoggerFactory.getLogger("KookCli");
     private static Terminal terminal;
     private static LineReader lineReader;
 
@@ -41,6 +50,36 @@ public final class KookCli {
 
     private static String currentGuild;
     private static String currentChannel;
+
+    public static ConsoleSender getConsoleSender() {
+        return SENDER;
+    }
+
+    public static CommandDispatcher<ConsoleSender> getCommandDispatcher() {
+        return COMMAND_DISPATCHER;
+    }
+
+    private static void registerCommands() {
+        CommandDispatcher<ConsoleSender> commandDispatcher = KookCli.getCommandDispatcher();
+        LoginCommand.register(commandDispatcher);
+        LogoutCommand.register(commandDispatcher);
+        InfoCommand.register(commandDispatcher);
+        GuildCommand.register(commandDispatcher);
+        ChannelCommand.register(commandDispatcher);
+        SendCommand.register(commandDispatcher);
+        ExitCommand.register(commandDispatcher);
+    }
+
+    public static void main() {
+        SysOutOverSLF4J.registerLoggingSystem("org.apache.logging");
+        SysOutOverSLF4J.sendSystemOutAndErrToSLF4J();
+
+        registerCommands();
+
+        // TODO: Load plugins here
+
+        new Console().start();
+    }
 
     public static boolean isLogged() {
         return logged_in;
@@ -269,7 +308,12 @@ public final class KookCli {
         @Override
         public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
             JsonObject object = JsonParser.parseString(text).getAsJsonObject();
-            System.out.println(object);
+            LOGGER.debug("Received: " + object);
+            if (!object.has("s"))
+                return;
+            if (object.get("s").getAsInt() != 0) {
+            }
+
         }
 
         @Override

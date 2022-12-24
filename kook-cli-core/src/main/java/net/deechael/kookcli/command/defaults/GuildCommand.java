@@ -2,9 +2,9 @@ package net.deechael.kookcli.command.defaults;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.CommandDispatcher;
-import net.deechael.kookcli.ConsoleSender;
 import net.deechael.kookcli.KookCli;
 import net.deechael.kookcli.command.Command;
+import net.deechael.kookcli.command.ConsoleSender;
 import net.deechael.kookcli.network.Routes;
 import net.deechael.kookcli.util.StringUtil;
 

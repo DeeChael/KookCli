@@ -2,15 +2,13 @@ package net.deechael.kookcli.command.defaults;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.CommandDispatcher;
-import net.deechael.kookcli.ConsoleSender;
 import net.deechael.kookcli.KookCli;
 import net.deechael.kookcli.command.Command;
+import net.deechael.kookcli.command.ConsoleSender;
 import net.deechael.kookcli.network.Routes;
+import net.deechael.kookcli.util.ParamsUtil;
 
 import java.util.HashMap;
-
-import static net.deechael.kookcli.util.ParamsUtil.param;
-import static net.deechael.kookcli.util.ParamsUtil.params;
 
 public final class InfoCommand {
 
@@ -30,10 +28,10 @@ public final class InfoCommand {
                             builder.append("Login Type: ").append(KookCli.isBot() ? "Bot" : "User").append("\n");
                             builder.append("Login As: ").append(data.get("username").getAsString()).append("#").append(data.get("identify_num").getAsString()).append("\n");
                             if (KookCli.getCurrentGuild() != null) {
-                                JsonObject guildData = KookCli.getRequest(Routes.GUILD_VIEW, params(param("guild_id", KookCli.getCurrentGuild()))).getAsJsonObject("data");
+                                JsonObject guildData = KookCli.getRequest(Routes.GUILD_VIEW, ParamsUtil.params(ParamsUtil.param("guild_id", KookCli.getCurrentGuild()))).getAsJsonObject("data");
                                 builder.append("Current Guild: ").append(guildData.get("name").getAsString()).append("\n");
                                 if (KookCli.getCurrentChannel() != null) {
-                                    JsonObject channelData = KookCli.getRequest(Routes.CHANNEL_VIEW, params(param("target_id", KookCli.getCurrentChannel()))).getAsJsonObject("data");
+                                    JsonObject channelData = KookCli.getRequest(Routes.CHANNEL_VIEW, ParamsUtil.params(ParamsUtil.param("target_id", KookCli.getCurrentChannel()))).getAsJsonObject("data");
                                     builder.append("Current Channel: ").append(channelData.get("name").getAsString()).append("\n");
                                 }
                             }

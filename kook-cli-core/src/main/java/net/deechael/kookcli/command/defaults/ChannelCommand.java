@@ -2,16 +2,14 @@ package net.deechael.kookcli.command.defaults;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.CommandDispatcher;
-import net.deechael.kookcli.ConsoleSender;
 import net.deechael.kookcli.KookCli;
 import net.deechael.kookcli.command.Command;
+import net.deechael.kookcli.command.ConsoleSender;
 import net.deechael.kookcli.network.Routes;
+import net.deechael.kookcli.util.ParamsUtil;
 import net.deechael.kookcli.util.StringUtil;
 
 import java.util.List;
-
-import static net.deechael.kookcli.util.ParamsUtil.param;
-import static net.deechael.kookcli.util.ParamsUtil.params;
 
 public final class ChannelCommand {
 
@@ -34,7 +32,7 @@ public final class ChannelCommand {
                                 KookCli.getLogger().error("You are not in a guild");
                                 return 1;
                             }
-                            List<JsonObject> channels = KookCli.getPagableRequest(Routes.CHANNEL_LIST, params(param("guild_id", KookCli.getCurrentGuild())));
+                            List<JsonObject> channels = KookCli.getPagableRequest(Routes.CHANNEL_LIST, ParamsUtil.params(ParamsUtil.param("guild_id", KookCli.getCurrentGuild())));
                             StringBuilder message = new StringBuilder();
                             for (int i = channels.size() - 1; i >= 0; i--) {
                                 message.append(channels.get(i).get("name").getAsString()).append("\n");
@@ -52,7 +50,7 @@ public final class ChannelCommand {
                                 KookCli.getLogger().error("You are not in a guild");
                                 return 1;
                             }
-                            List<JsonObject> channels = KookCli.getPagableRequest(Routes.CHANNEL_LIST, params(param("guild_id", KookCli.getCurrentGuild())));
+                            List<JsonObject> channels = KookCli.getPagableRequest(Routes.CHANNEL_LIST, ParamsUtil.params(ParamsUtil.param("guild_id", KookCli.getCurrentGuild())));
                             StringBuilder message = new StringBuilder();
                             for (int i = channels.size() - 1; i >= 0; i--) {
                                 message.append(i).append(" - ").append(channels.get(i).get("name").getAsString()).append("\n");
