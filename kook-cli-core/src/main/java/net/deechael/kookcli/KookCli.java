@@ -109,11 +109,13 @@ public final class KookCli {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Thread.currentThread().setName("websocket");
                 LOGGER.error("Failed to login", e);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Thread.currentThread().setName("websocket");
                 LOGGER.debug("Logged successfully");
                 JsonObject body = JsonParser.parseString(Objects.requireNonNull(response.body()).string()).getAsJsonObject();
                 if (!body.has("token")) {
@@ -262,6 +264,7 @@ public final class KookCli {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Thread.currentThread().setName("websocket");
                 LOGGER.error("Failed to fetch the websocket url", e);
                 logged_in = false;
                 auth = null;
@@ -270,6 +273,7 @@ public final class KookCli {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Thread.currentThread().setName("websocket");
                 LOGGER.debug("Fetched websocket url successfully");
                 JsonObject body = JsonParser.parseString(Objects.requireNonNull(response.body()).string()).getAsJsonObject();
                 String url = body.getAsJsonObject("data").get("url").getAsString();
@@ -304,6 +308,11 @@ public final class KookCli {
     }
 
     private static class Receiver extends WebSocketListener {
+
+        @Override
+        public void onOpen(@NotNull WebSocket webSocket, @NotNull Response response) {
+            Thread.currentThread().setName("websocket");
+        }
 
         @Override
         public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
