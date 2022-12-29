@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group 'net.deechael'
@@ -35,20 +34,12 @@ dependencies {
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
 
-    implementation project(':kook-cli-api')
-
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     testCompileOnly 'org.projectlombok:lombok:1.18.24'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
-}
-
-shadowJar {
-    archiveBaseName.set(project.name + "-" + project.version)
-    archiveClassifier.set('')
-    archiveVersion.set('')
 }
 
 test {

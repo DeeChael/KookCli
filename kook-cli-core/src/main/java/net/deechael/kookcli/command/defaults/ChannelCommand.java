@@ -32,7 +32,7 @@ public final class ChannelCommand {
                                 KookCli.getLogger().error("You are not in a guild");
                                 return 1;
                             }
-                            List<JsonObject> channels = KookCli.getPagableRequest(Routes.CHANNEL_LIST, ParamsUtil.params(ParamsUtil.param("guild_id", KookCli.getCurrentGuild())));
+                            List<JsonObject> channels = KookCli.getPageableRequest(Routes.CHANNEL_LIST, ParamsUtil.params(ParamsUtil.param("guild_id", KookCli.getCurrentGuild())));
                             StringBuilder message = new StringBuilder();
                             for (int i = channels.size() - 1; i >= 0; i--) {
                                 message.append(channels.get(i).get("name").getAsString()).append("\n");
@@ -50,7 +50,7 @@ public final class ChannelCommand {
                                 KookCli.getLogger().error("You are not in a guild");
                                 return 1;
                             }
-                            List<JsonObject> channels = KookCli.getPagableRequest(Routes.CHANNEL_LIST, ParamsUtil.params(ParamsUtil.param("guild_id", KookCli.getCurrentGuild())));
+                            List<JsonObject> channels = KookCli.getPageableRequest(Routes.CHANNEL_LIST, ParamsUtil.params(ParamsUtil.param("guild_id", KookCli.getCurrentGuild())));
                             StringBuilder message = new StringBuilder();
                             for (int i = channels.size() - 1; i >= 0; i--) {
                                 message.append(i).append(" - ").append(channels.get(i).get("name").getAsString()).append("\n");

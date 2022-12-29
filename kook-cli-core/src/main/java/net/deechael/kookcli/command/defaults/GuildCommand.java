@@ -31,7 +31,7 @@ public final class GuildCommand {
                                 KookCli.getLogger().error("Please login first");
                                 return 1;
                             }
-                            List<JsonObject> guilds = KookCli.getPagableRequest(Routes.GUILD_LIST, new HashMap<>());
+                            List<JsonObject> guilds = KookCli.getPageableRequest(Routes.GUILD_LIST, new HashMap<>());
                             StringBuilder message = new StringBuilder();
                             for (int i = guilds.size() - 1; i >= 0; i--) {
                                 message.append(guilds.get(i).get("name").getAsString()).append("\n");
@@ -45,7 +45,7 @@ public final class GuildCommand {
                                 KookCli.getLogger().error("Please login first");
                                 return 1;
                             }
-                            List<JsonObject> guilds = KookCli.getPagableRequest(Routes.GUILD_LIST, new HashMap<>());
+                            List<JsonObject> guilds = KookCli.getPageableRequest(Routes.GUILD_LIST, new HashMap<>());
                             StringBuilder message = new StringBuilder();
                             for (int i = guilds.size() - 1; i >= 0; i--) {
                                 message.append(i).append(" - ").append(guilds.get(i).get("name").getAsString()).append("\n");

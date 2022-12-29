@@ -1,0 +1,6 @@
+{
+  "name": "test",
+  "main": "net.deechael.kookcli.test.plugin.TestPlugin",
+  "version": "1.00.0",
+  "author": "DeeChael"
+}

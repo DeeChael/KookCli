@@ -1,3 +1,5 @@
 rootProject.name = 'kook-cli'
 include 'kook-cli-core'
+include 'kook-cli-api'
+include 'kookcli-test-plugin'
 

@@ -20,5 +20,9 @@ First run
 ```
 Second run
 ```shell
-./gradlw buildWithDependencies
+./gradlw shadowJar
+```
+Last run
+```shell
+./gradlew buildWithDependencies
 ```

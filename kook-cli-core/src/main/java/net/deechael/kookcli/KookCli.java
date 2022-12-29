@@ -9,6 +9,7 @@ import net.deechael.kookcli.command.Console;
 import net.deechael.kookcli.command.ConsoleSender;
 import net.deechael.kookcli.command.defaults.*;
 import net.deechael.kookcli.network.Routes;
+import net.deechael.kookcli.plugin.PluginManager;
 import net.deechael.kookcli.util.ZlibUtil;
 import okhttp3.*;
 import okio.ByteString;
@@ -30,6 +31,8 @@ public final class KookCli {
     private final static ConsoleSender SENDER = new ConsoleSender();
 
     private final static Gson GSON = new Gson();
+
+    private final static PluginManager PLUGIN_MANAGER = new PluginManager();
 
     private final static OkHttpClient HTTP_CLIENT = new OkHttpClient.Builder()
             .pingInterval(28, TimeUnit.SECONDS)
@@ -61,6 +64,7 @@ public final class KookCli {
 
     private static void registerCommands() {
         CommandDispatcher<ConsoleSender> commandDispatcher = KookCli.getCommandDispatcher();
+        PluginsCommand.register(commandDispatcher);
         LoginCommand.register(commandDispatcher);
         LogoutCommand.register(commandDispatcher);
         InfoCommand.register(commandDispatcher);
@@ -76,9 +80,15 @@ public final class KookCli {
 
         registerCommands();
 
-        // TODO: Load plugins here
+        Console console = new Console();
 
-        new Console().start();
+        PLUGIN_MANAGER.load();
+
+        console.start();
+    }
+
+    public static PluginManager getPluginManager() {
+        return PLUGIN_MANAGER;
     }
 
     public static boolean isLogged() {
@@ -167,7 +177,7 @@ public final class KookCli {
         return call(url, req);
     }
 
-    public static List<JsonObject> getPagableRequest(String url, Map<String, String> params) {
+    public static List<JsonObject> getPageableRequest(String url, Map<String, String> params) {
         params.put("page", "1");
         params.put("page_size", "50");
         JsonObject firstData = getRequest(url, params);
@@ -234,6 +244,7 @@ public final class KookCli {
 
     public static void exit() {
         logout();
+        PLUGIN_MANAGER.unload();
         System.exit(0);
     }
 

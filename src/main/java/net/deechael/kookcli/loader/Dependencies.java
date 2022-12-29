@@ -22,8 +22,9 @@ public final class Dependencies {
                 continue;
             File libraryFile = new File(folder, library);
             urls.add(libraryFile.toURI().toURL());
-            if (libraryFile.exists())
-                continue;
+            if (!library.contains("kook-cli")) // To prevent cannot update kook-cli-core
+                if (libraryFile.exists())
+                    continue;
             try {
                 copy("/libraries/" + library, libraryFile);
             } catch (IOException e) {
