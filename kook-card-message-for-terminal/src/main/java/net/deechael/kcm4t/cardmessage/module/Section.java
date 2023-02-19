@@ -2,6 +2,7 @@ package net.deechael.kcm4t.cardmessage.module;
 
 import com.google.gson.*;
 import net.deechael.dutil.gson.JOBuilder;
+import net.deechael.dutil.gson.JOReader;
 import net.deechael.kcm4t.cardmessage.Base;
 import net.deechael.kcm4t.cardmessage.element.Button;
 import net.deechael.kcm4t.cardmessage.element.Image;
