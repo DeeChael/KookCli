@@ -15,6 +15,7 @@ public final class GuildCommand {
 
     public static void register(CommandDispatcher<ConsoleSender> commandDispatcher) {
         commandDispatcher.register(Command.of("guild")
+                .requires(sender -> KookCli.isLogged())
                 .then(Command.of("help")
                         .executes(context -> {
                             System.out.println("guild - Guild operations\n" +

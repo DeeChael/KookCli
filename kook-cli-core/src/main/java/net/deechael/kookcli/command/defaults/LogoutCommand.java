@@ -9,6 +9,7 @@ public final class LogoutCommand {
 
     public static void register(CommandDispatcher<ConsoleSender> commandDispatcher) {
         commandDispatcher.register(Command.of("logout")
+                .requires(sender -> KookCli.isLogged())
                 .executes(context -> {
                     if (!KookCli.isLogged()) {
                         System.out.println("You haven't logged yet");

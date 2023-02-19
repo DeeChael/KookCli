@@ -13,6 +13,7 @@ public final class SendCommand {
 
     public static void register(CommandDispatcher<ConsoleSender> commandDispatcher) {
         commandDispatcher.register(Command.of("send")
+                .requires(sender -> KookCli.isLogged())
                 .then(Command.of("text")
                         .then(Argument.of("content", StringArgumentType.string())
                                 .executes(context -> {

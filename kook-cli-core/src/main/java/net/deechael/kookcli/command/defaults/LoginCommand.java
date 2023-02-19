@@ -13,6 +13,7 @@ public final class LoginCommand {
     public static void register(CommandDispatcher<ConsoleSender> commandDispatcher) {
         commandDispatcher.register(Command
                 .of("login")
+                .requires(sender -> !KookCli.isLogged())
                 .then(Command.of("help")
                         .executes(context -> {
                             System.out.println("login - Login your account\n" +

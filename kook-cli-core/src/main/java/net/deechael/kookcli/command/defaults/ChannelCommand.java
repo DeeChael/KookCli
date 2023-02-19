@@ -15,6 +15,7 @@ public final class ChannelCommand {
 
     public static void register(CommandDispatcher<ConsoleSender> commandDispatcher) {
         commandDispatcher.register(Command.of("channel")
+                        .requires(sender -> KookCli.isLogged())
                 .then(Command.of("help")
                         .executes(context -> {
                             System.out.println("channel - Channel operations\n" +
