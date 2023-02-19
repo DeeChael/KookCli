@@ -1,12 +1,12 @@
 package net.deechael.kcm4t.cardmessage;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import net.deechael.kcm4t.cardmessage.element.Button;
 import net.deechael.kcm4t.cardmessage.element.Text;
 import net.deechael.kcm4t.cardmessage.module.Section;
 import net.deechael.kcm4t.cardmessage.struct.Paragraph;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +16,7 @@ public class Deserializer {
             .registerTypeAdapter(Text.class, Text.Deserializer.INSTANCE)
             .registerTypeAdapter(Button.class, Button.Deserializer.INSTANCE)
             .registerTypeAdapter(Section.class, Section.Deserializer.INSTANCE)
+            .registerTypeAdapter(Base.class, (JsonSerializer<Base>) (src, typeOfSrc, context) -> src.serialize())
             .create();
 
     private final static Map<String, Class<? extends Base>> TYPE_MAP = new HashMap<>();
